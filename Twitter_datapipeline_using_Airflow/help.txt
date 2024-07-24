@@ -1,0 +1,30 @@
+Get Data and Create DataFrame:
+Use the pandas library to load the CSV data into a DataFrame.
+
+Create EC2 Instance:
+Launch an EC2 instance on AWS with Ubuntu OS for accessing Airflow.
+
+Connect to EC2 Instance:
+Connect to the EC2 instance via SSH from the command line.
+
+Install Airflow:
+Run the airflow_installation_command_ec2_ubuntu script on the EC2 instance to set up Airflow. This script includes creating a Python virtual environment and other necessary installations.
+
+Run Airflow:
+Start Airflow using the command airflow standalone.
+
+Upload Files:
+Navigate to the Airflow directory on the EC2 instance.
+Create a new folder and manually copy the required files (csv, twitter_dag.py, twitter_etl.py) into it.
+
+Restart Airflow:
+Stop and restart Airflow using the airflow standalone command.
+
+Access Airflow UI:
+Copy the EC2 public DNS and access it in a browser using port 8080.
+
+Trigger DAG:
+If all steps are successful, you should see the DAG file in the Airflow UI. Manually trigger it to run the DAG.
+
+Note:
+If you encounter errors related to S3 bucket access, create an IAM role with full EC2 and S3 bucket access and attach it to the instance.
