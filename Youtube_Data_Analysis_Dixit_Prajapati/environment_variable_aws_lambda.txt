@@ -1,0 +1,5 @@
+Key Value
+glue_catalog_db_name    de_youtube_raw
+glue_catalog_table_name     cleaned_statistics_reference_data
+s3_cleansed_layer       s3://de-on-youtube-cleansed-eu-north-1-dx-dev/youtube
+write_data_operation     append

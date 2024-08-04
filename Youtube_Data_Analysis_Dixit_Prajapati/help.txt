@@ -1,0 +1,239 @@
+=====================Dixit Prajapati==============================
+
+1. Create AWS Account and Create IAM User with Administrative Access
+    Go to the AWS Website: Open your browser and go to AWS.
+    Sign Up for AWS: Click on "Create an AWS Account". Follow the on-screen instructions to enter your account information. You'll need to provide an email address, password, and billing information.
+    Verify Email and Log In: Verify your email address and then log into your AWS Management Console.
+    Navigate to IAM: In the AWS Management Console, type "IAM" in the search bar and select "IAM" under services.
+    Create a New User:
+    Click on "Users" from the left-hand side menu.
+    Click on "Add user".
+    Enter a username for the new user.
+    Select the "Attach policies directly" option and search for "AdministratorAccess".
+    Check the "AdministratorAccess" policy and proceed to review and create the user.
+    Download Access Credentials: After creating the user, download the .csv file containing the Access Key ID and Secret Access Key. This file will be needed later for configuring AWS CLI.
+
+2. Download and Install AWS CLI
+    Download AWS CLI: Go to the AWS CLI download page and download the installer for your operating system (Windows, macOS, or Linux).
+    Install AWS CLI:
+    Windows: Run the downloaded .msi file and follow the installation prompts.
+    macOS/Linux: Follow the installation instructions specific to your OS, which typically involve running a series of commands in the terminal.
+
+3. Verify AWS CLI Installation
+    Open Command Prompt: Open Command Prompt (cmd) on Windows or Terminal on macOS/Linux.
+    Check Installation: Type aws and press Enter. If the AWS CLI is installed correctly, you should see a list of available AWS CLI commands and options.
+
+4. Configure AWS CLI
+    Run AWS Configure: In the Command Prompt, type aws configure and press Enter.
+    Create Access Key in IAM:
+    Go back to the AWS Management Console and navigate to IAM.
+    Click on "Users" and select the user you created.
+    Go to the "Security credentials" tab and click "Create access key".
+    Copy the Access Key ID and Secret Access Key.
+    Add Access Key to CLI:
+    When prompted in the Command Prompt, enter the Access Key ID.
+    Enter the Secret Access Key.
+    Provide Default Region: Enter the AWS region you want to use (e.g., us-east-1).
+    Default Output Format: You can leave this blank or enter json.
+
+5. Create S3 Bucket in AWS
+    Navigate to S3: In the AWS Management Console, search for "S3" and select it.
+    Create a Bucket:
+    Click on "Create bucket".
+    Enter a unique bucket name (e.g., de-on-youtube-useast1-rawdata--dev).
+    Select the desired region.
+    Configure other settings as needed and click "Create bucket".
+
+6. Download Raw Data
+    Download the Data: Go to the provided Kaggle dataset link and download the dataset.
+    (https://www.kaggle.com/datasets/datasnaek/youtube-new)
+    Extract and Store Data: Extract the downloaded data and store it in a specific folder on your computer.
+
+7. Upload Data to S3 Bucket
+    Navigate to Folder in Command Prompt:
+    Open Command Prompt and navigate to the folder where the downloaded data is stored using the cd command.
+    Upload JSON Files: Run the following command to upload JSON files to the S3 bucket:
+    bash
+    Copy code
+    aws s3 cp . s3://de-on-youtube-useast1-rawdata--dev/youtube/raw_statistics_reference_data/ --recursive --exclude "*" --include "*.json"
+    Ensure you replace the bucket name if it's different.
+
+8. Create Region-wise Folders in S3 Bucket
+    Upload CSV Files:
+    Run the following commands in the Command Prompt to create region-wise folders and upload the respective CSV files:
+    bash
+    Copy code
+    aws s3 cp CAvideos.csv s3://de-on-youtube-useast1-rawdata--dev/youtube/raw_statistics/region=ca/
+    aws s3 cp DEvideos.csv s3://de-on-youtube-useast1-rawdata--dev/youtube/raw_statistics/region=de/
+    aws s3 cp FRvideos.csv s3://de-on-youtube-useast1-rawdata--dev/youtube/raw_statistics/region=fr/
+    aws s3 cp GBvideos.csv s3://de-on-youtube-useast1-rawdata--dev/youtube/raw_statistics/region=gb/
+    aws s3 cp INvideos.csv s3://de-on-youtube-useast1-rawdata--dev/youtube/raw_statistics/region=in/
+    aws s3 cp JPvideos.csv s3://de-on-youtube-useast1-rawdata--dev/youtube/raw_statistics/region=jp/
+    aws s3 cp KRvideos.csv s3://de-on-youtube-useast1-rawdata--dev/youtube/raw_statistics/region=kr/
+    aws s3 cp MXvideos.csv s3://de-on-youtube-useast1-rawdata--dev/youtube/raw_statistics/region=mx/
+    aws s3 cp RUvideos.csv s3://de-on-youtube-useast1-rawdata--dev/youtube/raw_statistics/region=ru/
+    aws s3 cp USvideos.csv s3://de-on-youtube-useast1-rawdata--dev/youtube/raw_statistics/region=us/
+
+9. Create AWS Glue Crawler
+    Navigate to AWS Glue: In the AWS Management Console, search for "Glue" and select it.
+    Create IAM Role for Glue:
+    Navigate to IAM, create a new role for AWS Glue with permissions for both AWS Glue and S3.
+    Attach the policies: AWSGlueServiceRole and AmazonS3FullAccess.
+    Create Crawler:
+    In AWS Glue, click on "Crawlers" in the left-hand menu.
+    Click "Add crawler".
+    Follow the steps to configure the crawler:
+    Specify data sources (S3 paths where you uploaded the data).
+    Specify the IAM role created for Glue.
+    Define the target database where the metadata will be stored.
+
+10. Run the Glue Crawler
+    Start the Crawler: After setting up the crawler, start it to scan the data and create metadata tables.
+    Verify Crawler Completion: Once the crawler finishes, it will create tables in the Glue Data Catalog. You can check the metadata by clicking on the tables.
+    11. View Data in AWS Athena
+    Navigate to Athena: In the AWS Management Console, search for "Athena" and select it.
+    Configure Athena Settings:
+    If prompted, configure the query result location by selecting an S3 bucket to store the results.
+    Run a Sample Query: Click on the table created by the Glue crawler and attempt to run a query to view the data.
+    Manage Settings: If you encounter errors, you may need to adjust settings such as selecting a different S3 bucket for query results.
+
+12. Preprocess Data Using AWS Lambda
+    Navigate to AWS Lambda: In the AWS Management Console, search for "Lambda" and select it.
+    Create a Lambda Function:
+    Click "Create function".
+    Choose "Author from scratch", give it a name, and select the runtime (e.g., Python).
+    Configure Lambda:
+    Go to the "Configuration" tab and add environment variables as required by your script.
+    Upload Code: Upload the Python code for transforming JSON data to columns and rows.
+    Create IAM Role for Lambda:
+    Create a new IAM role with permissions to access the S3 bucket.
+    Attach the appropriate policies (e.g., AmazonS3FullAccess).
+    Test the Lambda Function:
+    Create a test event with the appropriate S3 bucket name and key.
+    Run the test to ensure the function executes without errors. Adjust time limits and memory settings as needed.
+
+13. Attach Required Permissions and Layers
+    Attach Layers: If your Lambda function requires additional libraries (e.g., pandas), attach the necessary Lambda layers.
+    Attach Glue Role: Ensure the Lambda function has the required IAM role with permissions to access AWS Glue.
+
+14. Create Cleaned Database and Query in Athena
+    Create Database: Create a new database in AWS Glue for cleaned data (e.g., db_youtube_cleaned).
+    Update Athena Query:
+    Go to Athena and update your queries to use the new database and table names.
+    For example:
+    sql
+    Copy code
+    SELECT * FROM "AwsDataCatalog"."db_youtube_cleaned"."cleaned_statistics_reference_data" WHERE id='1';
+
+Second Part
+
+15. Create another crawler and name it csv_crawler.
+    Use the same existing role as we used earlier for AWS Glue.
+    Use the source data from S3, which are in CSV format with individual folders. Select the same output source database as we chose earlier in Glue.
+    Create and run the crawler.
+
+16. Once Glue successfully runs, the table will appear in AWS Glue. Click on it and check the data preview.
+    You will be able to view the data in CSV format.
+
+17. Run the following query:
+    SELECT a.title, a.category_id, b.snippet_title 
+    FROM "AwsDataCatalog"."data-output-glue"."raw_statistics" a
+    INNER JOIN "db_youtube_cleaned"."cleaned_statistics_reference_data" b 
+    ON a.category_id = b.id
+    WHERE a.region = 'ca';
+
+18. If you encounter issues with the datatype, follow these steps:
+    Go to AWS Glue and navigate to the table with the cleaned data.
+    Inside the schema, go to edit schema and change the datatype of the id column from string to bigint.
+    Manually delete the AWS Glue table that contains cleaned data and run the AWS Lambda function again.
+
+19. When joining JSON cleaned data and CSV data, an error may occur due to different column datatypes in both tables. In one table, the datatype is bigint and in the other, it is text. Therefore, we need to convert the text datatype to bigint. Make changes in the crawler table where we get the metadata of the file:
+    Go to AWS Glue > Tables > cleaned JSON data > edit schema and update the datatype of the column from text to bigint.
+    Go to S3 where we store our clean data and delete the file inside the bucket. Then, run Lambda again.
+    After running Lambda, it will provide results based on our query. (Go to the query and run the query again to check the output).
+
+20. Once AWS Lambda runs successfully with the success code, the new table will be added in AWS Glue.
+
+21. Now you can try again with the same query. This time the query will work and the datatype of id will also be changed.
+
+22. Now we need to convert all our data, so we use Glue ETL to schedule a job for the same.
+
+23. We need to create a job for scheduling our task, so go to Visual ETL in AWS Glue and create it.
+
+24. We need to convert all our CSV files into Parquet format using AWS Glue ETL. Go to ETL and click on Visual ETL to create a job.
+
+25. Add the data source (S3 raw data) and add the destination (S3 cleaned data), and make changes in the script. Add the following content to the script:
+    from awsglue.dynamicframe import DynamicFrame
+    datasink1 = dropnullfields3.toDF().coalesce(1)
+    df_final_output = DynamicFrame.fromDF(datasink1, glueContext, "df_final_output")
+
+26. Save the script and run the job.
+
+27. Data Encoding Issue: When attempting to run the ETL job, it fails due to data in different languages that the computer cannot process. The data needs to be converted to UTF-8 format for proper processing.
+
+28. Use Valid Data Only: To bypass encoding issues, only use data from folders with regions 'ca', 'gb', and 'us' that are in the correct format.
+
+29. AWS Glue Crawler: 
+    After successfully completing the ETL task, navigate to AWS Glue and create a crawler on top of the processed data. Name the new data catalog `cleaned_csv_etl` to query the data efficiently.
+
+30. Run the Crawler: 
+    Once the crawler is created, run it to catalog the cleaned data.
+
+31. Automate Lambda Function: 
+    Set up a Lambda function to automate the process. The Lambda function should trigger whenever there is an update in the S3 bucket (e.g., adding or removing files).
+
+32. Add Trigger: 
+    Go to the Lambda function code and add a trigger for S3 events.
+
+33. Configure Trigger: 
+    Add the necessary configurations for the trigger, specifying the S3 bucket and source data. This will ensure that any event in the S3 bucket triggers the Lambda function.
+
+34. Verify Process Completion: 
+    After completing these steps, you should be able to view the cleaned CSV data using the data catalog table.
+
+
+### ETL Pipeline for Reporting
+
+
+35. Create ETL Pipeline: 
+    To avoid typing queries each time data is needed, create an ETL pipeline for reporting purposes.
+
+36. AWS Glue Visual:
+     Go to AWS Glue and create a new visual. Add two sources: `cleaned_catalog_csv` and `cleaned_catalog_parquet`.
+
+37. Add Transformation: 
+    Apply a transformation by joining the two tables using an inner join on the `id` and `category_id` fields.
+
+38. Set Output Location: 
+    Set the output location to a new S3 bucket, save, and run the job.
+
+39. Add Partitioning: 
+    Optionally, add partitions if you want to organize the data based on certain criteria.
+
+40. Verify Output: 
+    After the job runs successfully, check the new S3 bucket for the output files to be used in analytics.
+
+41. Preview Data: 
+    Go to AWS Glue, navigate to the catalog table, and preview the data. You will be redirected to Athena.
+
+42. Run Query in Athena: 
+    Execute a query in Athena to confirm the data is processed correctly.
+
+### Data Visualization
+
+43. AWS QuickSight: 
+    For data visualization, navigate to the AWS Management Console and search for QuickSight.
+
+44. Create New Dataset: 
+    In QuickSight, create a new dataset and add the final analytics dataset.
+
+45. Perform Visualization: 
+    Use QuickSight to create visualizations based on your final dataset.
+
+46. Finalize Project: 
+    Customize the visualizations as needed. The final project is now ready for delivery.
+
+By following these detailed steps, you should be able to successfully complete your ETL job, automate updates, and visualize your data effectively.
+
+
+=====================Dixit Prajapati==============================

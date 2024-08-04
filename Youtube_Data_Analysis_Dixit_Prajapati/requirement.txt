@@ -1,0 +1,12 @@
+=====================Dixit Prajapati==============================
+
+1. AWS Account 
+2. IAM user with administrative access
+3. AWS command line interface (CLI)
+4. S3 Bucket
+5. AWS Glue
+6. Amazon Athena 
+7. AWS Lambda
+8. AWS Quicksight
+
+=====================Dixit Prajapati==============================
