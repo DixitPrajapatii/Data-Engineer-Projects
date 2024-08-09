@@ -1,9 +1,0 @@
-Olympic data analytics using microsoft azure.
-
-1. Download the csv datafiles from the kaggle with the following link:
-    - https://www.kaggle.com/datasets/arjunprasadsarkhel/2021-olympics-in-tokyo
-    - There are five files names as athletes, coaches,entriesGender, Medals and Teams.
-
-2. Create microsoft azure account.
-
-3. 
