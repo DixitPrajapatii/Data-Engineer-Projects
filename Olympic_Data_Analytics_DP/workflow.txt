@@ -1,0 +1,2 @@
+Storage account (Git hub) =>> Data Ingestion (Data Factory) =>> Row Data (Azure Gen Data Lake 2) =>> Transformation (Azure Databricks) =>> Transform Data (Azure Gen 2 Data Lake Storage Account) =>> Analytics (Azure Synapse Analytics) =>> PowerBi Dashboard.
+
