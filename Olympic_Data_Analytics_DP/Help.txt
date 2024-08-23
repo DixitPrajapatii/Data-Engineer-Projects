@@ -1,0 +1,104 @@
+Phase : 1
+    Step 1: Download CSV Data Files from Kaggle
+        - Visit the following Kaggle link to download the Olympic data: [2021 Olympics in Tokyo](https://www.kaggle.com/datasets/arjunprasadsarkhel/2021-olympics-in-tokyo).
+        - The dataset includes five files: `athletes`, `coaches`, `entriesGender`, `Medals`, and `Teams`.
+
+    Step 2: Create a Microsoft Azure Account
+        - If you don't already have an account, sign up for Microsoft Azure to access cloud services.
+
+    Step 3: Create an Azure Storage Account
+        1. In the Azure portal, search for "Storage Account."
+        2. Click on "Create" and provide the necessary information to create your storage account.
+        3. After creating the storage account, navigate to it and look for the "Containers" option.
+
+    Step 4: Set Up Containers in Azure Storage Account
+        1. Within your storage account, click on "Containers."
+        2. Create a new container and name it `raw-data` for storing the raw CSV files.
+        3. Create another container named `transformed-data` for storing the transformed data.
+
+    Step 5: Create an Azure Data Factory
+        1. In the Azure portal, search for "Data Factory."
+        2. Click on "Create" and fill in the required details to set up your Data Factory.
+        3. Once created, click "Launch Data Factory" to access the Data Factory UI, where you can build data pipelines.
+
+    Step 6: Create a Data Pipeline in Azure Data Factory
+        1. In the Data Factory UI, click on "Author" and then the "+" icon to create a new pipeline.
+        2. Name the pipeline according to its purpose, e.g., "  ."
+        3. If you don’t have a GitHub account, create one and set up a new repository.
+        4. Upload your CSV data files to the GitHub repository.
+        5. In GitHub, open each file, click on "Raw," and copy the URL.
+
+    Step 7: Set Up the Data Pipeline to Ingest Data
+        1. In the Data Factory UI, under "Activities," find and drag the "Copy Data" activity into the pipeline.
+        2. Configure the source by selecting "HTTP" as the source type and pasting the GitHub raw URL.
+        3. Set the file type to "CSV" and choose "Anonymous" as the authentication method.
+        4. Configure the sink by creating a new dataset linked to your Azure Storage account (Gen 2).
+        5. Specify the file path and name in the sink dataset, ending with `.csv`.
+        6. Validate the pipeline, then click on "Debug" to execute the pipeline. The data should now be visible in the `raw-data` folder.
+
+    Step 8: Repeat for All Files
+        - Repeat the aboveSteps for each CSV file to ingest all data into the `raw-data` folder.
+
+
+   ## Databricks for Data Transformation
+
+    Step 1: Create an Azure Databricks Service
+        1. In the Azure portal, search for "Databricks" and select "Create."
+        2. Provide the necessary details and create the Databricks service.
+        3. Once created, launch the workspace.
+
+    Step 2: Set Up Compute Resources in Databricks
+        1. In the Databricks workspace, navigate to "Compute" and create a new cluster.
+        2. Fill in the required details and create the cluster.
+
+    Step 3: Configure Storage Account in Databricks
+        1. Go to the Azure homepage, search for "App Registration," and create a new app registration.
+        2. Note down the `Client ID` and `Tenant ID`.
+        3. Under "Certificates & Secrets," create a new client secret and save it securely.
+        4. Use these credentials in your Databricks notebook to configure access to your storage account.
+
+    Step 4: Data Transformation in Databricks
+        1. Create a new notebook in Databricks and copy the code from `transformation.ipynb`.
+        2. Update the storage account details in the notebook:
+        ```python
+        source = "abfss://olympic-data@olympicdatastoragedx.dfs.core.windows.net"
+        ```
+        3. To resolve any permission issues, assign the "Storage Blob Data Contributor" role to your app in the container's access control settings.
+
+    Step 5: Access and Transform Data
+        1. After resolving permission issues, verify that you can list the files in the Databricks environment.
+        2. Continue running the code in the notebook to perform data transformations as required.
+
+    Step 6: FinalSteps
+        - Read and process the data using Spark in Databricks.
+        - Follow through with the code provided in `transformation.ipynb` to complete the data transformation process.
+
+============================================================================================================================================================================================================================================================================================================================
+
+Phase 2: Setting Up and Using Azure Synapse Analytics
+
+    1. Navigate to Azure Portal: Begin by logging into your Azure portal and searching for "Azure Synapse Analytics."
+
+    2. Create Synapse Workspace: Set up a new Azure Synapse Analytics workspace. Provide the necessary details, including associating an existing Azure Data Lake Storage Gen2 account (previously created) or create a new one for storing metadata files generated during Synapse operations.
+
+    3. Access Synapse Workspace: After the workspace is created, navigate to the resource. Here, you’ll find a dashboard displaying various details like the activity log, access control, tags, settings, analytics pools, security, and more.
+
+    4. Launch Synapse Studio: In the overview section, locate and click on "Azure Synapse Studio," which will redirect you to the Synapse Studio interface.
+
+    5. Create a Lake Database: In Synapse Studio, go to the "Data" tab, click on the "+" icon, and select "Lake Database." Name the database according to your project requirements.
+
+    6. Add CSV Files and Create Tables:
+    - Click the "+" icon under "Tables" and choose "Add from data lake."
+    - Provide an external table name that matches your CSV file and configure the linked service.
+    - After linking the service, select the appropriate file or folder containing your transformed data.
+    - Review the inferred schema of the CSV file, ensuring that the "First row as column headers" option is checked.
+    - Click "Create" to generate the table with the data from the CSV file.
+    - Repeat these steps for each CSV file, ensuring that column names do not contain spaces.
+
+    7. Verify Data: Once all tables are created, use SQL queries to validate that the data in each table is correct.
+
+    8. Perform Data Analytics: Begin your data analysis by following the tasks outlined in the "SQL Data Analytics Task" document.
+
+    9. Integrate with Power BI: Connect your Synapse data storage to Power BI and create visualizations based on your data.
+
+    10. Project Completion: Congratulations! You’ve successfully completed the Olympic data analytics project using Azure Synapse Analytics and other Azure services. 
